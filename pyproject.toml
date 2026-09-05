@@ -1,0 +1,27 @@
+[project]
+name = "coderag"
+version = "0.1.0"
+description = "Codebase-aware RAG over a pinned open-source Python repository"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic-settings[yaml]>=2.5",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+# why: src/ layout keeps the import name `coderag` distinct from the repo root,
+# so `import coderag` can never accidentally resolve to a stray top-level file.
+[tool.hatch.build.targets.wheel]
+packages = ["src/coderag"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra"

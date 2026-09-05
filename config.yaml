@@ -1,0 +1,24 @@
+# Single source of truth for every tunable parameter in the pipeline.
+# Every value here can be overridden by an environment variable named
+# CODERAG_<FIELD> (e.g. CODERAG_CHUNK_MAX_TOKENS=256) without editing this file.
+
+repo_owner: pandas-dev
+repo_name: pandas
+
+# why: pinned SHA, never a branch. main moves, and a moving index makes every
+# retrieval number in results/ unreproducible and un-comparable across runs.
+pinned_sha: 2cc37625532045f4ac55b27176454bbbc9baf213
+
+# All paths are relative to the project root unless absolute.
+clone_dir: data/raw/repo
+raw_dir: data/raw
+interim_dir: data/interim
+index_dir: data/index
+results_dir: results
+
+embedding_model: sentence-transformers/all-mpnet-base-v2
+
+chunk_max_tokens: 512
+chunk_min_tokens: 32
+
+eval_k_values: [1, 5, 10, 20]

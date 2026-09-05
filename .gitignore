@@ -1,0 +1,20 @@
+# Generated artifacts: the directories are tracked (via .gitkeep), contents are not.
+data/raw/*
+data/interim/*
+data/index/*
+results/*
+!.gitkeep
+!**/.gitkeep
+
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+*.egg-info/
+
+CLAUDE.md
+PLAN.md
+SUMMARY.md
