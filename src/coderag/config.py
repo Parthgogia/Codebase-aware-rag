@@ -57,6 +57,13 @@ class Settings(BaseSettings):
 
     eval_k_values: list[int] = [1, 5, 10, 20]
 
+    # --- file inventory ----------------------------------------------------
+    # why: these live in config rather than as constants in repo.py because the
+    # inventory defines which files can ever be retrieved, which is an
+    # experimental parameter, not an implementation detail.
+    inventory_exclude: list[str] = [".git", "build", "doc/_build", "__pycache__"]
+    vendored_markers: list[str] = ["_vendor", "vendored", "third_party"]
+
     @classmethod
     def settings_customise_sources(
         cls,

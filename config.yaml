@@ -22,3 +22,22 @@ chunk_max_tokens: 512
 chunk_min_tokens: 32
 
 eval_k_values: [1, 5, 10, 20]
+
+# --- file inventory ----------------------------------------------------------
+# Matching rule for both lists: an entry containing "/" is matched as a path
+# prefix; an entry without one is matched against any single path segment.
+
+# Dropped from the inventory entirely.
+inventory_exclude:
+  - .git
+  - build
+  - doc/_build
+  - __pycache__
+  - .mypy_cache
+
+# Flagged as vendored/third-party, but kept.
+vendored_markers:
+  - _vendor
+  - vendored
+  - third_party
+  - pandas/util/version

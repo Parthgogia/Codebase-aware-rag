@@ -5,6 +5,8 @@ description = "Codebase-aware RAG over a pinned open-source Python repository"
 requires-python = ">=3.11"
 dependencies = [
     "pydantic-settings[yaml]>=2.5",
+    "typer>=0.12",
+    "pyarrow>=17.0",
 ]
 
 [dependency-groups]
