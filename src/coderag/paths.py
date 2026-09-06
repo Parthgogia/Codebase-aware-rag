@@ -26,6 +26,9 @@ RESULTS_DIR = _resolve(settings.results_dir)
 # The pinned checkout of the target repository.
 CLONE_DIR = _resolve(settings.clone_dir)
 
+# One JSON file per mined GitHub issue, named <number>.json.
+ISSUES_DIR = RAW_DIR / "issues"
+
 CONFIG_FILE = PROJECT_ROOT / "config.yaml"
 
 
