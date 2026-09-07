@@ -29,6 +29,11 @@ CLONE_DIR = _resolve(settings.clone_dir)
 # One JSON file per mined GitHub issue, named <number>.json.
 ISSUES_DIR = RAW_DIR / "issues"
 
+# Issue-to-PR linking caches, all keyed by number.
+TIMELINES_DIR = RAW_DIR / "timelines"
+PULLS_DIR = RAW_DIR / "pulls"
+PULL_FILES_DIR = RAW_DIR / "pull_files"
+
 CONFIG_FILE = PROJECT_ROOT / "config.yaml"
 
 

@@ -12,6 +12,7 @@ we want to show the user is git's own stderr, not a GitPython exception.
 
 import subprocess
 from collections import Counter
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pyarrow as pa
@@ -77,6 +78,20 @@ def clone() -> None:
     if head != sha:
         raise RuntimeError(f"checked out {head}, expected {sha}")
     typer.echo(f"Checked out {sha} (detached HEAD) in {CLONE_DIR}.")
+
+
+def pinned_commit_date() -> str:
+    """Committer date of the pinned commit as UTC `...Z`, from the checkout.
+
+    why: downstream steps must discard anything dated before the index commit or
+    they leak the future into the eval set, and this is the one authoritative
+    source for that cut-off.
+    """
+    # why: %ct (epoch) then format as UTC, not %cI. %cI keeps the committer's
+    # local offset ("...-07:00"), which does not compare correctly against the
+    # API's "...Z" timestamps and would admit issues from the leakage window.
+    epoch = int(_git("show", "-s", "--format=%ct", "HEAD", cwd=CLONE_DIR))
+    return datetime.fromtimestamp(epoch, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 # --- inventory ---------------------------------------------------------------
