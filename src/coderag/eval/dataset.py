@@ -169,6 +169,7 @@ SCHEMA = pa.schema(
         pa.field("bucket", pa.string()),
         pa.field("gt_files", pa.list_(pa.string())),
         pa.field("gt_symbols", pa.list_(pa.string())),
+        pa.field("gt_symbol_keys", pa.list_(pa.string())),
     ]
 )
 
@@ -235,6 +236,13 @@ def build_queries() -> None:
                 "bucket": bucket_for(text, gt_files, gt_symbols),
                 "gt_files": gt_files,
                 "gt_symbols": gt_symbols,
+                # why: symbol names are not unique across the repo -- `df` and
+                # `test_series` each occur in several files, exposing 6% of
+                # queries to a same-name-wrong-file false hit. Scoring joins on
+                # this pair; `gt_symbols` stays for readability and bucketing.
+                "gt_symbol_keys": sorted(
+                    {f"{r['file_path']}::{r['qualified_name']}" for r in resolvable}
+                ),
             }
         )
 
