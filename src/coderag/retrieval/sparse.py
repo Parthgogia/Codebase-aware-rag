@@ -17,6 +17,7 @@ import pyarrow.parquet as pq
 import typer
 
 from coderag.chunking.ast_chunker import AST_CHUNKS_PARQUET
+from coderag.chunking.enrich import ENRICHED_CHUNKS_PARQUET
 from coderag.chunking.naive import NAIVE_CHUNKS_PARQUET
 from coderag.config import settings
 from coderag.eval.harness import evaluate, load_queries
@@ -81,9 +82,9 @@ def tokenize_code(text: str) -> list[str]:
 class BM25Retriever:
     """A callable `(query, k) -> list[RetrievedChunk]` over one chunk table."""
 
-    def __init__(self, chunks: list[dict[str, Any]]) -> None:
+    def __init__(self, chunks: list[dict[str, Any]], field: str = "text") -> None:
         self.chunks = chunks
-        corpus = [tokenize_code(chunk["text"]) for chunk in chunks]
+        corpus = [tokenize_code(chunk[field]) for chunk in chunks]
         self.index = bm25s.BM25()
         self.index.index(corpus, show_progress=False)
 
@@ -116,7 +117,11 @@ def main() -> None:
     # why: an explicit callback keeps typer from collapsing the subcommand name.
 
 
-CHUNK_TABLES = {"naive": NAIVE_CHUNKS_PARQUET, "ast": AST_CHUNKS_PARQUET}
+CHUNK_TABLES = {
+    "naive": NAIVE_CHUNKS_PARQUET,
+    "ast": AST_CHUNKS_PARQUET,
+    "ast_enriched": ENRICHED_CHUNKS_PARQUET,
+}
 
 
 @app.command("evaluate-bm25")
@@ -124,6 +129,7 @@ def evaluate_bm25(
     chunks_name: str = typer.Option("naive", "--chunks", help="naive or ast"),
     run_name: str = typer.Option(None, help="Results go to results/<name>.json"),
     text_field: str = typer.Option("query_text", help="query_text or query_text_stripped"),
+    chunk_field: str = typer.Option("text", help="text or enriched_text"),
 ) -> None:
     """Build the BM25 index over a chunk table and score it."""
     if chunks_name not in CHUNK_TABLES:
@@ -132,7 +138,7 @@ def evaluate_bm25(
     chunks = pq.read_table(CHUNK_TABLES[chunks_name]).to_pylist()
     queries = load_queries()
     typer.echo(f"indexing {len(chunks):,} chunks for {len(queries):,} queries...")
-    retriever = BM25Retriever(chunks)
+    retriever = BM25Retriever(chunks, chunk_field)
     table = evaluate(retriever, queries, run_name, settings.eval_k_values, text_field)
     typer.echo("\n" + table.render())
     typer.echo(f"\nwrote {table.save()}")

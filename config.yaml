@@ -21,6 +21,10 @@ embedding_model: sentence-transformers/all-mpnet-base-v2
 chunk_max_tokens: 512
 chunk_min_tokens: 32
 
+# Context enrichment (step 10). The header prepended to each chunk's raw code.
+enrich_header_max_tokens: 128
+enrich_imports_max_tokens: 48
+
 eval_k_values: [1, 5, 10, 20]
 
 # --- file inventory ----------------------------------------------------------

@@ -55,6 +55,12 @@ class Settings(BaseSettings):
     chunk_max_tokens: int = 512
     chunk_min_tokens: int = 32
 
+    # why: two budgets, not one. The import list is the least valuable part of
+    # the header and the easiest to run away with, so it is capped before the
+    # header as a whole is.
+    enrich_header_max_tokens: int = 128
+    enrich_imports_max_tokens: int = 48
+
     eval_k_values: list[int] = [1, 5, 10, 20]
 
     # --- file inventory ----------------------------------------------------
