@@ -184,7 +184,7 @@ def ground_truth_pool() -> list[RetrievedChunk]:
     rows = pq.read_table(GROUND_TRUTH_PARQUET).to_pylist()
     seen = {(r["file_path"], r["qualified_name"]) for r in rows}
     return [
-        RetrievedChunk(f"{path}::{name}", path, name, 0.0)
+        RetrievedChunk(f"{path}::{name}", path, 0.0, (name,))
         for path, name in sorted(seen)
     ]
 

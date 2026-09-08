@@ -9,6 +9,8 @@ dependencies = [
     "pyarrow>=17.0",
     "requests>=2.32",
     "numpy>=2.0",
+    "tiktoken>=0.8",
+    "bm25s>=0.2",
 ]
 
 [dependency-groups]

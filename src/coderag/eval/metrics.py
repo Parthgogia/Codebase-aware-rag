@@ -5,7 +5,7 @@ orchestration; this module is only arithmetic, so it can be unit-tested against
 hand-written rankings.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from math import log2
 
 # why: relevance is binary here. A chunk either contains code the fixing PR
@@ -15,51 +15,63 @@ RELEVANT = 1.0
 
 @dataclass(frozen=True)
 class RetrievedChunk:
-    """One result from a retriever, at one rank."""
+    """One result from a retriever, at one rank.
+
+    A chunk covers one or more symbols. An AST chunk covers exactly one; a
+    fixed-size window covers whatever functions its line range happens to
+    overlap, which is the whole point of comparing the two.
+    """
 
     chunk_id: str
     file_path: str
-    qualified_name: str
-    score: float
+    score: float = 0.0
+    # why: a tuple of names rather than a single `qualified_name`. Scoring a
+    # naive window by one arbitrarily-chosen symbol would understate it, and
+    # picking its "main" symbol is a judgement the chunker cannot honestly make.
+    symbols: tuple[str, ...] = field(default_factory=tuple)
 
     @property
-    def symbol_key(self) -> str:
-        """File-qualified symbol identity, the symbol-level join key."""
-        # why: `qualified_name` alone is not unique across the repo -- `df` and
-        # `test_series` live in several files each -- so matching on the bare
-        # name would count a right-name-wrong-file chunk as a hit.
-        return f"{self.file_path}::{self.qualified_name}"
+    def symbol_keys(self) -> set[str]:
+        """File-qualified symbol identities, the symbol-level join keys."""
+        # why: a bare qualified name is not unique across the repo -- `df` and
+        # `test_series` live in several files each -- so matching on the name
+        # alone would count a right-name-wrong-file chunk as a hit.
+        return {f"{self.file_path}::{name}" for name in self.symbols}
 
 
-def recall_at_k(retrieved: list[str], relevant: set[str], k: int) -> float:
-    """Fraction of the relevant set that appears in the top k.
+def recall_at_k(ranked: list[set[str]], relevant: set[str], k: int) -> float:
+    """Fraction of the relevant set covered by the top k results.
 
     why: true recall, not hit-rate. An issue whose fix touched three symbols is
     only fully answered by finding all three, and a system that reliably finds
     one of three is materially worse than one that finds them all. Note the
-    consequence: with three relevant items, Recall@1 can never exceed 0.33.
+    consequence: with three relevant items and one symbol per chunk, Recall@1
+    can never exceed 0.33.
     """
     if not relevant:
         return 0.0
-    return len(relevant.intersection(retrieved[:k])) / len(relevant)
+    found: set[str] = set()
+    for keys in ranked[:k]:
+        found |= keys
+    return len(found & relevant) / len(relevant)
 
 
-def mrr_at_k(retrieved: list[str], relevant: set[str], k: int) -> float:
+def mrr_at_k(ranked: list[set[str]], relevant: set[str], k: int) -> float:
     """Reciprocal rank of the first relevant result, or 0 if none in top k."""
-    for rank, key in enumerate(retrieved[:k], start=1):
-        if key in relevant:
+    for rank, keys in enumerate(ranked[:k], start=1):
+        if keys & relevant:
             return 1.0 / rank
     return 0.0
 
 
-def ndcg_at_k(retrieved: list[str], relevant: set[str], k: int) -> float:
+def ndcg_at_k(ranked: list[set[str]], relevant: set[str], k: int) -> float:
     """Normalised discounted cumulative gain with binary relevance."""
     if not relevant:
         return 0.0
     gain = sum(
         RELEVANT / log2(rank + 1)
-        for rank, key in enumerate(retrieved[:k], start=1)
-        if key in relevant
+        for rank, keys in enumerate(ranked[:k], start=1)
+        if keys & relevant
     )
     # why: the ideal ranking is every relevant item first, but no more of them
     # than fit in k. Without that cap a query with 30 relevant symbols could
@@ -76,8 +88,8 @@ def score_query(
 ) -> dict[str, float]:
     """Every metric for one query, at both file and symbol granularity."""
     levels = {
-        "file": ([c.file_path for c in chunks], gt_files),
-        "symbol": ([c.symbol_key for c in chunks], gt_symbol_keys),
+        "file": ([{c.file_path} for c in chunks], gt_files),
+        "symbol": ([c.symbol_keys for c in chunks], gt_symbol_keys),
     }
     scores: dict[str, float] = {}
     for level, (ranked, relevant) in levels.items():
