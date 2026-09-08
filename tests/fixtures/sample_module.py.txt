@@ -1,0 +1,251 @@
+"""Fixture module for the AST chunker golden test."""
+
+import os
+import sys
+
+CONSTANT = 1
+
+
+@decorator
+def decorated_function(a, b):
+    """Has a decorator on the line above."""
+    return a + b
+
+
+async def async_top_level(x):
+    await x
+
+
+class Outer:
+    """Class docstring."""
+
+    attribute = 2
+
+    @property
+    def one_liner(self):
+        return self.attribute
+
+    @staticmethod
+    def tiny():
+        return 1
+
+    async def async_method(self, x):
+        return await x
+
+    class Nested:
+        """Nested class docstring."""
+
+        nested_attr = 3
+
+        def nested_method(self):
+            return self.nested_attr
+
+
+def big_function(n):
+    """A function long enough to be split."""
+    total = 0
+    total += 0  # padding line to force an oversized split
+    total += 1  # padding line to force an oversized split
+    total += 2  # padding line to force an oversized split
+    total += 3  # padding line to force an oversized split
+    total += 4  # padding line to force an oversized split
+    total += 5  # padding line to force an oversized split
+    total += 6  # padding line to force an oversized split
+    total += 7  # padding line to force an oversized split
+    total += 8  # padding line to force an oversized split
+    total += 9  # padding line to force an oversized split
+    total += 10  # padding line to force an oversized split
+    total += 11  # padding line to force an oversized split
+    total += 12  # padding line to force an oversized split
+    total += 13  # padding line to force an oversized split
+    total += 14  # padding line to force an oversized split
+    total += 15  # padding line to force an oversized split
+    total += 16  # padding line to force an oversized split
+    total += 17  # padding line to force an oversized split
+    total += 18  # padding line to force an oversized split
+    total += 19  # padding line to force an oversized split
+    total += 20  # padding line to force an oversized split
+    total += 21  # padding line to force an oversized split
+    total += 22  # padding line to force an oversized split
+    total += 23  # padding line to force an oversized split
+    total += 24  # padding line to force an oversized split
+    total += 25  # padding line to force an oversized split
+    total += 26  # padding line to force an oversized split
+    total += 27  # padding line to force an oversized split
+    total += 28  # padding line to force an oversized split
+    total += 29  # padding line to force an oversized split
+    total += 30  # padding line to force an oversized split
+    total += 31  # padding line to force an oversized split
+    total += 32  # padding line to force an oversized split
+    total += 33  # padding line to force an oversized split
+    total += 34  # padding line to force an oversized split
+    total += 35  # padding line to force an oversized split
+    total += 36  # padding line to force an oversized split
+    total += 37  # padding line to force an oversized split
+    total += 38  # padding line to force an oversized split
+    total += 39  # padding line to force an oversized split
+    total += 40  # padding line to force an oversized split
+    total += 41  # padding line to force an oversized split
+    total += 42  # padding line to force an oversized split
+    total += 43  # padding line to force an oversized split
+    total += 44  # padding line to force an oversized split
+    total += 45  # padding line to force an oversized split
+    total += 46  # padding line to force an oversized split
+    total += 47  # padding line to force an oversized split
+    total += 48  # padding line to force an oversized split
+    total += 49  # padding line to force an oversized split
+    total += 50  # padding line to force an oversized split
+    total += 51  # padding line to force an oversized split
+    total += 52  # padding line to force an oversized split
+    total += 53  # padding line to force an oversized split
+    total += 54  # padding line to force an oversized split
+    total += 55  # padding line to force an oversized split
+    total += 56  # padding line to force an oversized split
+    total += 57  # padding line to force an oversized split
+    total += 58  # padding line to force an oversized split
+    total += 59  # padding line to force an oversized split
+    total += 60  # padding line to force an oversized split
+    total += 61  # padding line to force an oversized split
+    total += 62  # padding line to force an oversized split
+    total += 63  # padding line to force an oversized split
+    total += 64  # padding line to force an oversized split
+    total += 65  # padding line to force an oversized split
+    total += 66  # padding line to force an oversized split
+    total += 67  # padding line to force an oversized split
+    total += 68  # padding line to force an oversized split
+    total += 69  # padding line to force an oversized split
+    total += 70  # padding line to force an oversized split
+    total += 71  # padding line to force an oversized split
+    total += 72  # padding line to force an oversized split
+    total += 73  # padding line to force an oversized split
+    total += 74  # padding line to force an oversized split
+    total += 75  # padding line to force an oversized split
+    total += 76  # padding line to force an oversized split
+    total += 77  # padding line to force an oversized split
+    total += 78  # padding line to force an oversized split
+    total += 79  # padding line to force an oversized split
+    total += 80  # padding line to force an oversized split
+    total += 81  # padding line to force an oversized split
+    total += 82  # padding line to force an oversized split
+    total += 83  # padding line to force an oversized split
+    total += 84  # padding line to force an oversized split
+    total += 85  # padding line to force an oversized split
+    total += 86  # padding line to force an oversized split
+    total += 87  # padding line to force an oversized split
+    total += 88  # padding line to force an oversized split
+    total += 89  # padding line to force an oversized split
+    total += 90  # padding line to force an oversized split
+    total += 91  # padding line to force an oversized split
+    total += 92  # padding line to force an oversized split
+    total += 93  # padding line to force an oversized split
+    total += 94  # padding line to force an oversized split
+    total += 95  # padding line to force an oversized split
+    total += 96  # padding line to force an oversized split
+    total += 97  # padding line to force an oversized split
+    total += 98  # padding line to force an oversized split
+    total += 99  # padding line to force an oversized split
+    total += 100  # padding line to force an oversized split
+    total += 101  # padding line to force an oversized split
+    total += 102  # padding line to force an oversized split
+    total += 103  # padding line to force an oversized split
+    total += 104  # padding line to force an oversized split
+    total += 105  # padding line to force an oversized split
+    total += 106  # padding line to force an oversized split
+    total += 107  # padding line to force an oversized split
+    total += 108  # padding line to force an oversized split
+    total += 109  # padding line to force an oversized split
+    total += 110  # padding line to force an oversized split
+    total += 111  # padding line to force an oversized split
+    total += 112  # padding line to force an oversized split
+    total += 113  # padding line to force an oversized split
+    total += 114  # padding line to force an oversized split
+    total += 115  # padding line to force an oversized split
+    total += 116  # padding line to force an oversized split
+    total += 117  # padding line to force an oversized split
+    total += 118  # padding line to force an oversized split
+    total += 119  # padding line to force an oversized split
+    total += 120  # padding line to force an oversized split
+    total += 121  # padding line to force an oversized split
+    total += 122  # padding line to force an oversized split
+    total += 123  # padding line to force an oversized split
+    total += 124  # padding line to force an oversized split
+    total += 125  # padding line to force an oversized split
+    total += 126  # padding line to force an oversized split
+    total += 127  # padding line to force an oversized split
+    total += 128  # padding line to force an oversized split
+    total += 129  # padding line to force an oversized split
+    total += 130  # padding line to force an oversized split
+    total += 131  # padding line to force an oversized split
+    total += 132  # padding line to force an oversized split
+    total += 133  # padding line to force an oversized split
+    total += 134  # padding line to force an oversized split
+    total += 135  # padding line to force an oversized split
+    total += 136  # padding line to force an oversized split
+    total += 137  # padding line to force an oversized split
+    total += 138  # padding line to force an oversized split
+    total += 139  # padding line to force an oversized split
+    total += 140  # padding line to force an oversized split
+    total += 141  # padding line to force an oversized split
+    total += 142  # padding line to force an oversized split
+    total += 143  # padding line to force an oversized split
+    total += 144  # padding line to force an oversized split
+    total += 145  # padding line to force an oversized split
+    total += 146  # padding line to force an oversized split
+    total += 147  # padding line to force an oversized split
+    total += 148  # padding line to force an oversized split
+    total += 149  # padding line to force an oversized split
+    total += 150  # padding line to force an oversized split
+    total += 151  # padding line to force an oversized split
+    total += 152  # padding line to force an oversized split
+    total += 153  # padding line to force an oversized split
+    total += 154  # padding line to force an oversized split
+    total += 155  # padding line to force an oversized split
+    total += 156  # padding line to force an oversized split
+    total += 157  # padding line to force an oversized split
+    total += 158  # padding line to force an oversized split
+    total += 159  # padding line to force an oversized split
+    total += 160  # padding line to force an oversized split
+    total += 161  # padding line to force an oversized split
+    total += 162  # padding line to force an oversized split
+    total += 163  # padding line to force an oversized split
+    total += 164  # padding line to force an oversized split
+    total += 165  # padding line to force an oversized split
+    total += 166  # padding line to force an oversized split
+    total += 167  # padding line to force an oversized split
+    total += 168  # padding line to force an oversized split
+    total += 169  # padding line to force an oversized split
+    total += 170  # padding line to force an oversized split
+    total += 171  # padding line to force an oversized split
+    total += 172  # padding line to force an oversized split
+    total += 173  # padding line to force an oversized split
+    total += 174  # padding line to force an oversized split
+    total += 175  # padding line to force an oversized split
+    total += 176  # padding line to force an oversized split
+    total += 177  # padding line to force an oversized split
+    total += 178  # padding line to force an oversized split
+    total += 179  # padding line to force an oversized split
+    total += 180  # padding line to force an oversized split
+    total += 181  # padding line to force an oversized split
+    total += 182  # padding line to force an oversized split
+    total += 183  # padding line to force an oversized split
+    total += 184  # padding line to force an oversized split
+    total += 185  # padding line to force an oversized split
+    total += 186  # padding line to force an oversized split
+    total += 187  # padding line to force an oversized split
+    total += 188  # padding line to force an oversized split
+    total += 189  # padding line to force an oversized split
+    total += 190  # padding line to force an oversized split
+    total += 191  # padding line to force an oversized split
+    total += 192  # padding line to force an oversized split
+    total += 193  # padding line to force an oversized split
+    total += 194  # padding line to force an oversized split
+    total += 195  # padding line to force an oversized split
+    total += 196  # padding line to force an oversized split
+    total += 197  # padding line to force an oversized split
+    total += 198  # padding line to force an oversized split
+    total += 199  # padding line to force an oversized split
+    return total
+
+
+TRAILING = "module level code after the defs"
+
